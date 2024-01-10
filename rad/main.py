@@ -65,7 +65,7 @@ def article():
         # select from each political bias a few articles
         # range -100 to 100
         for bias in range(-100, 81, 20):
-            sql = "SELECT id, url, political_bias, created_at FROM `article` WHERE `political_bias` BETWEEN %s AND %s AND `id` IN (SELECT `article_id` FROM `keywords` WHERE `keyword` IN (" + ("%s, " * len(keywords))[:-2] + "))"
+            sql = "SELECT * FROM `article` WHERE `political_bias` BETWEEN %s AND %s AND `id` IN (SELECT `article_id` FROM `keywords` WHERE `keyword` IN (" + ("%s, " * len(keywords))[:-2] + "))"
             cursor.execute(sql, (bias, bias+19, *keywords))
             articles += [cursor.fetchall()]
         
@@ -92,10 +92,11 @@ def article():
             sql = "INSERT INTO `keywords` (`keyword`, `article_id`) VALUES (%s, %s)"
             cursor.execute(sql, (keyword, id))
     connection.commit()
-    # replace each article date with a string
+    # replace each article date with a string and remove the text
     for i in range(len(articles)):
         for j in range(len(articles[i])):
             articles[i][j]['created_at'] = str(articles[i][j]['created_at'])
+            del articles[i][j]['text']
     return {'status': 'success', 'article_id': id, 'related_articles': articles}
 
 run(host='0.0.0.0', port=8080, debug=True, reloader=True)
