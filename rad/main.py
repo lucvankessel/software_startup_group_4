@@ -65,7 +65,7 @@ def article():
         # select from each political bias a few articles
         # range -100 to 100
         for bias in range(-100, 81, 20):
-            sql = "SELECT * FROM `article` WHERE `political_bias` BETWEEN %s AND %s AND `id` IN (SELECT `article_id` FROM `keywords` WHERE `keyword` IN (" + ("%s, " * len(keywords))[:-2] + "))"
+            sql = "SELECT id, url, political_bias, created_at FROM `article` WHERE `political_bias` BETWEEN %s AND %s AND `id` IN (SELECT `article_id` FROM `keywords` WHERE `keyword` IN (" + ("%s, " * len(keywords))[:-2] + "))"
             cursor.execute(sql, (bias, bias+19, *keywords))
             articles += [cursor.fetchall()]
         
