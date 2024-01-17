@@ -5,12 +5,12 @@ FROM python:3.11
 WORKDIR /app
 
 # Copy the requirements file into the container
-COPY * .
+COPY . /app
 
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 8080
+EXPOSE 8082
 
 # Set the command to run your Python file
 CMD ["python", "main.py"]
