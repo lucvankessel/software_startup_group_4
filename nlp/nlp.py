@@ -19,7 +19,7 @@ def get_dbpedia_annotations(text):
         "confidence": 0.5,
     }
 
-    response = requests.post('http://localhost:2222/rest/annotate', headers=headers, data=data)
+    response = requests.post('http://dbpedia-spotlight/rest/annotate', headers=headers, data=data)
 
     if response.status_code == 200:
         json_response = response.json()
