@@ -13,6 +13,18 @@ services:
     volumes:
       - software-startup-db:/var/lib/mysql
 
+  backend:
+    image: software-startup/backend
+    build:
+      context: ./backend
+    restart: always
+    ports:
+      - '8081:8081'
+      # mount the local directory to the container, so that we can edit the code
+      # and see the changes in the container
+    volumes:
+      - ./backend:/app
+
   rad:
     image: software-startup/rad
     build:
