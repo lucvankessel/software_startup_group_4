@@ -1,8 +1,12 @@
 from bottle import route, run, request, post, response
 import pymysql.cursors
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Connect to the database in docker container
-connection = pymysql.connect(host='db',
+connection = pymysql.connect(host=os.getenv("DATABASE_HOST", "db"),
                              user='user',
                              password='password',
                              database='db',

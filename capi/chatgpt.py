@@ -1,6 +1,10 @@
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
   
-my_api_key = '{api key}'
+my_api_key = os.getenv("OPENAI_KEY")
 
 def get_chatgpt_result(selected_text):
     client = OpenAI(

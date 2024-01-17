@@ -33,3 +33,4 @@ urllib3==2.1.0
 vaderSentiment==3.3.2
 wasabi==1.1.2
 weasel==0.3.4
+python-dotenv

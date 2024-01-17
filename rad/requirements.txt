@@ -1,3 +1,4 @@
 bottle
 pymysql
 cryptography
+python-dotenv
