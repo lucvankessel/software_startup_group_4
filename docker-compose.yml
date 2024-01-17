@@ -16,14 +16,14 @@ services:
   backend:
     image: software-startup/backend
     build:
-      context: ./backend
+      context: capi
     restart: always
     ports:
       - '8082:8082'
       # mount the local directory to the container, so that we can edit the code
       # and see the changes in the container
     volumes:
-      - ./backend:/app
+      - ./capi:/app
 
   rad:
     image: software-startup/rad
