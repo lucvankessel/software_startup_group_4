@@ -41,4 +41,4 @@ def article():
     # return the RAD results and the classification to the user.
     return {'status': 'success', "classification": "something", "related_articles": ["article 1", "article 2"]}
 
-run(host='0.0.0.0', port=8081, debug=True, reloader=True)
+run(host='0.0.0.0', port=8082, debug=True, reloader=True)
