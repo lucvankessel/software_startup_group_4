@@ -47,20 +47,5 @@ def classify_sentence(text, threshold=0.1):
         if sentence:
             opinion_orientation = get_opinion_orientation(sentence, entity_text)
             total_sentiment += opinion_orientation
-
-    if total_sentiment <= thresholds['extreme_left']:
-        return 'Extreme Left'
-    elif total_sentiment <= thresholds['moderately_left']:
-        return 'Moderately Left'
-    elif thresholds['neutral_lower'] < total_sentiment < thresholds['neutral_upper']:
-        return 'Neutral'
-    elif total_sentiment < thresholds['moderately_right']:
-        return 'Slightly Right'
-    elif total_sentiment < thresholds['extreme_right']:
-        return 'Moderately Right'
-    else:
-        return 'Extreme Right'
-
-
-test = "I love Bernie Sanders. He is the best."
-print(classify_sentence(test))
+    
+    return total_sentiment * 100
