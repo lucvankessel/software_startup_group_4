@@ -16,7 +16,7 @@ services:
   backend:
     image: software-startup/backend
     build:
-      context: capi
+      context: ./capi
     restart: always
     ports:
       - '8082:8082'
