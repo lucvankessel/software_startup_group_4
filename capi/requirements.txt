@@ -1,3 +1,4 @@
 bottle
 pymysql
 openai
+python-dotenv
