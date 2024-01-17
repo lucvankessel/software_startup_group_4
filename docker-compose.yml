@@ -12,6 +12,7 @@ services:
       - '3306:3306'
     volumes:
       - software-startup-db:/var/lib/mysql
+
   rad:
     image: software-startup/rad
     build:
@@ -24,5 +25,25 @@ services:
     volumes:
       - ./rad:/app
 
+  dbpedia-spotlight:
+    image: dbpedia/dbpedia-spotlight:latest
+    command: spotlight.sh en
+    ports:
+      - "2222:80"
+    restart: unless-stopped
+    volumes:
+      - spotlight-model:/opt/spotlight
+
+  nlp:
+    image: software-startup/nlp
+    build:
+      context: ./nlp
+    restart: always
+    ports:
+      - '8081:8080'
+    volumes:
+      - ./nlp:/app
+
 volumes:
   software-startup-db:
+  spotlight-model:
