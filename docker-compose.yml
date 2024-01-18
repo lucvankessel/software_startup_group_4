@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.8'
 services:
   db:
     image: mysql:latest
@@ -17,6 +17,8 @@ services:
     image: software-startup/backend
     build:
       context: ./capi
+    depends_on:
+      - db
     restart: always
     ports:
       - '8082:8082'
@@ -29,6 +31,8 @@ services:
     image: software-startup/rad
     build:
       context: ./rad
+    depends_on:
+      - db
     restart: always
     ports:
       - '8080:8080'
@@ -50,6 +54,8 @@ services:
     image: software-startup/nlp
     build:
       context: ./nlp
+    depends_on:
+      - dbpedia-spotlight
     restart: always
     ports:
       - '8081:8080'
