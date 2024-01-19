@@ -7,13 +7,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 function: getSelectedText
                 }, 
                 async function(result) {
+
+                    console.log(tabs[0].url)
                     document.getElementById("getSelectedText").style.display = "none"
                     
                     document.getElementById("loadingIcon").style.display = "block"
-                    analyzePoliticalLeaning(result[0].result)
+                    analyzePoliticalLeaning(result[0].result, tabs[0].url)
                         .then(data => {
                             result = JSON.parse(data.choices[0].message.content)
-
                             document.getElementById("loadingIcon").style.display = "none"
 
                             document.getElementById("politicalLeaning").style.display = "block";
@@ -37,7 +38,34 @@ function getSelectedText() {
     return selectedText
 }
 
-const analyzePoliticalLeaning = async (selected_text) => {
+const analyzePoliticalLeaning = async(selected_text, url) => {
+
+  const data = {
+    url: url,
+    text: selected_text
+  }
+
+  try {
+    // Change the url here if you are doing local development, do not commit any other domain.
+    const response = await fetch('http://project.lucvkessel.nl/article', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(data)
+    });
+    
+    const responseData = await response.json();
+    const result = JSON.parse(responseData.choices[0].message.content);
+
+    console.log(result);
+    return responseData;
+  } catch (error) {
+    console.error(error);
+    throw error; 
+  }
+}
+
+// keeping this here if i want to test something with openAI instead of our own AI.
+const analyzePoliticalLeaningChatGpt = async (selected_text) => {
     const OPENAI_API_KEY = '{api key here}';
 
     const headers = {
