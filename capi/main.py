@@ -1,4 +1,4 @@
-from bottle import route, run, request, post, response
+from bottle import route, run, request, post, response, hook
 import pymysql.cursors
 from dotenv import load_dotenv
 import os
@@ -13,7 +13,25 @@ connection = pymysql.connect(host=os.getenv("DATABASE_HOST", "db"),
                              cursorclass=pymysql.cursors.DictCursor)
 
 
-@route('/')
+def enable_cors(fn):
+    def _enable_cors(*args, **kwargs):
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
+        response.headers[
+            'Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
+        if request.method != 'OPTIONS':
+            return fn(*args, **kwargs)
+
+    return _enable_cors
+
+
+@hook('after_request')
+def after_request():
+    response.headers['Access-Control-Allow-Origin'] = '*'
+
+
+@route('/', method=['OPTIONS', 'GET'])
+@enable_cors
 def index():
     return {
         "French": "Salut, Monde!",
@@ -37,12 +55,15 @@ def index():
         "Vietnamese": "Chào, Thế giới!"
     }
 
-@post('/article')
+
+@post('/article', method=['OPTIONS', 'POST'])
+@enable_cors
 def article():
     # see if the article is already in the database.
     # if not access the NLP/chatgpt to get the classification
     # send the article with classification to the RAD.
     # return the RAD results and the classification to the user.
     return {'status': 'success', "classification": "something", "related_articles": ["article 1", "article 2"]}
+
 
 run(host='0.0.0.0', port=8082, debug=True, reloader=True)
