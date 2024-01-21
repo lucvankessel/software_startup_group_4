@@ -20,7 +20,8 @@ with connection:
         sql = "CREATE TABLE IF NOT EXISTS `keywords` (`id` int(11) NOT NULL AUTO_INCREMENT, `keyword` varchar(255) NOT NULL, `article_id` int(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`article_id`) REFERENCES `article`(`id`) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;"
         cursor.execute(sql)
     connection.commit()
-        
+
+
 @route('/')
 def index():
     return {
@@ -55,13 +56,12 @@ def article():
     political_bias = request.json.get('political_bias')
     keywords = request.json.get('keywords', '').split(',')
 
-
     if not text or not url or not political_bias or not keywords:
         response.status = 500
         return {'status': 'error', 'message': 'missing data'}
-    
-    connection.ping() # reconnect if connection is closed, TODO: check if `with connection:` also reconnects
-        
+
+    connection.ping()  # reconnect if connection is closed, TODO: check if `with connection:` also reconnects
+
     articles = []
 
     # find related articles with the same keywords
@@ -69,18 +69,21 @@ def article():
         # select from each political bias a few articles
         # range -100 to 100
         for bias in range(-100, 81, 20):
-            sql = "SELECT * FROM `article` WHERE `political_bias` BETWEEN %s AND %s AND `id` IN (SELECT `article_id` FROM `keywords` WHERE `keyword` IN (" + ("%s, " * len(keywords))[:-2] + "))"
-            cursor.execute(sql, (bias, bias+19, *keywords))
+            sql = "SELECT * FROM `article` WHERE `political_bias` BETWEEN %s AND %s AND `id` IN (SELECT `article_id` FROM `keywords` WHERE `keyword` IN (" + (
+                                                                                                                                                                         "%s, " * len(
+                                                                                                                                                                     keywords))[
+                                                                                                                                                             :-2] + "))"
+            cursor.execute(sql, (bias, bias + 19, *keywords))
             articles += [cursor.fetchall()]
-        
+
         # sort by relevance for each political bias
         for bias_articles in articles:
             for article in bias_articles:
                 article['relevance'] = len(set(keywords) & set(article['text'].split(' ')))
-        
+
         for i in range(len(articles)):
             articles[i] = sorted(articles[i], key=lambda k: k['relevance'], reverse=True)[:3]
-    
+
     with connection.cursor() as cursor:
         # insert article if it doesn't exist
         sql = "SELECT * FROM `article` WHERE `text`=%s AND `url`=%s AND `political_bias`=%s"
@@ -102,5 +105,6 @@ def article():
             articles[i][j]['created_at'] = str(articles[i][j]['created_at'])
             del articles[i][j]['text']
     return {'status': 'success', 'article_id': id, 'related_articles': articles}
+
 
 run(host='0.0.0.0', port=8080, debug=True, reloader=True)
