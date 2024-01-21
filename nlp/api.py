@@ -1,12 +1,11 @@
-from bottle import Bottle, request, response
+from bottle import route, run, request, post, response
 import json
 from nlp import classify_sentence  # Make sure to import the function correctly
 
-app = Bottle()
 
-
-@app.post('/classify')
+@post('/classify')
 def classify_text():
+    print("NLP classify_text running", flush=True)
     try:
         # Parse input data
         data = request.json
@@ -24,5 +23,4 @@ def classify_text():
         return json.dumps({'error': str(e)})
 
 
-if __name__ == '__main__':
-    app.run(host='localhost', port=8080, debug=True)
+run(host='0.0.0.0', port=8081, debug=True, reloader=True)
