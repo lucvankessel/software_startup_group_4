@@ -10,7 +10,7 @@ COPY . /app
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 8080
+EXPOSE 8081
 
 # Set the command to run your Python file
 CMD ["python", "api.py"]
