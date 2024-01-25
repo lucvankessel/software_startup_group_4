@@ -40,12 +40,15 @@ def classify_sentence(text, threshold=0.1):
     annotations = get_dbpedia_annotations(text)
     doc = nlp(text)
     total_sentiment = 0
+    keywords = []
 
     for entity in annotations:
         entity_text = entity["@surfaceForm"]
+        keywords.append(entity_text)
         sentence = next((sent for sent in doc.sents if entity_text in sent.text), None)
         if sentence:
             opinion_orientation = get_opinion_orientation(sentence, entity_text)
             total_sentiment += opinion_orientation
-    
-    return total_sentiment * 100
+
+    return total_sentiment * 100, keywords
+
