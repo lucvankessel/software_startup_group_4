@@ -14,10 +14,10 @@ def classify_text():
             raise ValueError("No text provided.")
 
         # Use the NLP function to classify the text
-        result = classify_sentence(text)
+        result, keywords = classify_sentence(text)
 
         # Prepare the response
-        return json.dumps({'classification': result})
+        return json.dumps({'classification': result, 'keywords': keywords})
     except Exception as e:
         response.status = 400
         return json.dumps({'error': str(e)})
