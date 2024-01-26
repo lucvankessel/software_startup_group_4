@@ -79,23 +79,23 @@ def article():
     print("------", flush=True)
     translated_text = chatgpt.translate_chatgpt(selected_text)
     tt_json = json.loads(translated_text)
-    print(translated_text,flush=True)
+    print(translated_text, flush=True)
 
-    print("------",flush=True)
+    print("------", flush=True)
 
     chatgpt_classification = chatgpt.get_chatgpt_result(selected_text)
     cc_json = json.loads(chatgpt_classification)
-    print(chatgpt_classification,flush=True)
+    print(chatgpt_classification, flush=True)
     print("------", flush=True)
 
-
     # temporary only getting classification from NLP, TODO: integrate classification from chatGPT
-    classification = get_classification(tt_json["result"])
-    if not classification:
-        response.status = 500  # Internal Server Error
-        return {'status': 'error', 'message': 'Error in classification'}
 
-    keywords = ["Trump", "bad", "wall", "freedom", "tax"] # temporary assignment for testing, TODO: collect keywords according to selected_text
+    nlp_result = get_classification_and_keywords(tt_json["result"])
+    if nlp_result is None:
+        response.status = 500
+        return {"error": "Error in calling NLP service"}
+
+    classification, keywords = nlp_result
 
     rad_data = get_rad_data(selected_text, url, classification, keywords)
     if not rad_data:
@@ -104,7 +104,8 @@ def article():
 
     related_articles = rad_data['related_articles']
 
-    return {'status': 'success', "classification": classification, "related_articles": related_articles, "chatgpt_classification": cc_json["number"], "chatgpt_reason": cc_json["reason"]}
+    return {'status': 'success', "classification": classification, "related_articles": related_articles,
+            "chatgpt_classification": cc_json["number"], "chatgpt_reason": cc_json["reason"]}
 
 
 # Helper Functions
@@ -133,11 +134,12 @@ def url_exists(url):
         return cursor.fetchone() is not None
 
 
-def get_classification(text):
+def get_classification_and_keywords(text):
     try:
         nlp_response = requests.post('http://nlp:8081/classify', json={'text': text})
         nlp_response.raise_for_status()
-        return nlp_response.json().get('classification')
+        response_data = nlp_response.json()
+        return response_data['classification'], response_data['keywords']
     except requests.exceptions.RequestException as e:
         print(f"Error calling NLP service: {e}", flush=True)
         return None
