@@ -14,13 +14,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById("loadingIcon").style.display = "block"
                     analyzePoliticalLeaning(result[0].result, tabs[0].url)
                         .then(data => {
-                            result = JSON.parse(data.choices[0].message.content)
                             document.getElementById("loadingIcon").style.display = "none"
 
                             document.getElementById("politicalLeaning").style.display = "block";
                             document.getElementById("relatedArticles").style.display = "block";
 
-                            document.getElementById("leaningText").innerHTML = result.result
+                            document.getElementById("leaningText").innerHTML = generateLeaningString(data.classification)
+                            // display the related articles.
                         })
                         .catch(error => {
                             console.log(error)
@@ -38,6 +38,24 @@ function getSelectedText() {
     return selectedText
 }
 
+function generateLeaningString(number_input) {
+    if(number_input > 75) {
+        return "far right"
+    }
+    if(number_input < 75 && number_input > 25) {
+        return "right"
+    }
+    if(number_input < 25 && number_input > -25) {
+        return "centre"
+    }
+    if(number_input < -25 && number_input > -75) {
+        return "left"
+    }
+    if(number_input < -75) {
+        return "far left"
+    }
+}
+
 const analyzePoliticalLeaning = async (selected_text, url) => {
 
     const headers = {
@@ -52,7 +70,7 @@ const analyzePoliticalLeaning = async (selected_text, url) => {
 
     try {
         // Change the url here if you are doing local development, do not commit any other domain. http://localhost:8082/article
-        const response = await fetch('http://localhost:8082/article', {
+        const response = await fetch('http://project.lucvkessel.nl/article', {
             method: 'POST',
             headers,
             body: JSON.stringify(data)
@@ -61,10 +79,6 @@ const analyzePoliticalLeaning = async (selected_text, url) => {
         const responseData = await response.json();
         console.log("responseData:");
         console.log(responseData);
-        const result = JSON.parse(responseData.choices[0].message.content);
-
-        console.log("result:");
-        console.log(result);
         return responseData;
     } catch (error) {
         console.error(error);
