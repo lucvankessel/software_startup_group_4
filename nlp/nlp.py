@@ -50,5 +50,5 @@ def classify_sentence(text, threshold=0.1):
             opinion_orientation = get_opinion_orientation(sentence, entity_text)
             total_sentiment += opinion_orientation
 
-    return total_sentiment * 100, keywords
+    return total_sentiment * 10, keywords
 
