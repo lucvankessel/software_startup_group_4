@@ -19,8 +19,23 @@ document.addEventListener('DOMContentLoaded', function () {
                             document.getElementById("politicalLeaning").style.display = "block";
                             document.getElementById("relatedArticles").style.display = "block";
 
-                            document.getElementById("leaningText").innerHTML = generateLeaningString(data.classification)
-                            // display the related articles.
+                            document.getElementById("leaningText").innerHTML = dualLeaningString(data.classification, data.chatgpt_classification)
+
+                            rad = getRandomArticles(data.related_articles)
+                            console.log(rad)
+                            rad_element = document.getElementById("articlesList")
+                            for( i = 0; i<rad.length; i++) {
+                                var listItem = document.createElement('li');
+
+                                var anchor = document.createElement('a');
+                                anchor.href = rad[i].url;
+                                anchor.target = '_blank';
+                                anchor.textContent = generateLeaningString(rad[i].political_bias);
+
+                                listItem.appendChild(anchor);
+
+                                rad_element.appendChild(listItem)
+                            }
                         })
                         .catch(error => {
                             console.log(error)
@@ -36,6 +51,45 @@ function getSelectedText() {
     var selectedText = selection.toString().trim();
 
     return selectedText
+}
+
+function getRandomArticles(data) {
+    return_articles = []
+
+    for (var i=0; i < 3; i++) {
+        var item;
+        for(var j=0; j < data.length; j++) {
+            random_id = Math.floor(Math.random() * data.length);
+            var data_item = data[random_id];
+            if (data_item.length == 0) {
+                continue;
+            }
+            item = data_item
+            data.splice(random_id, 1);
+            break;
+        }
+        var article = item[Math.floor(Math.random() * item.length)]
+        return_articles.push(article)
+    }
+
+    return return_articles
+}
+
+function dualLeaningString(number1, number2) {
+    nlp_classification = number1
+    chatgpt_classification = number2
+
+    difference = Math.abs(nlp_classification - chatgpt_classification);
+
+    number_input = 0
+
+    if(difference > 25) {
+        number_input = nlp_classification
+    } else {
+        number_input = (nlp_classification + chatgpt_classification) / 2
+    }
+
+    return generateLeaningString(number_input)
 }
 
 function generateLeaningString(number_input) {
@@ -85,50 +139,3 @@ const analyzePoliticalLeaning = async (selected_text, url) => {
         throw error;
     }
 }
-
-// keeping this here if i want to test something with openAI instead of our own AI.
-const analyzePoliticalLeaningChatGpt = async (selected_text) => {
-    const OPENAI_API_KEY = '{api key here}';
-
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
-    };
-
-    const data = {
-        model: 'gpt-3.5-turbo-1106',
-        response_format: {type: 'json_object'},
-        messages: [
-            {
-                role: 'system',
-                content: `
-            You are a political analysis tool designed to output what political leaning a text has and return that as a JSON object.
-            Do this based on how the Dutch perceive these political sides to be.
-            Do not only look at the subject but also how the author writes about the subject.
-            this return is one object you return like {"result": {political leaning}, "reason": "{reason why you decided to give the given text this value}"}}
-          `
-            },
-            {
-                role: 'user',
-                content: selected_text
-            }
-        ]
-    };
-
-    try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(data)
-        });
-
-        const responseData = await response.json();
-        const result = JSON.parse(responseData.choices[0].message.content);
-
-        console.log(result);
-        return responseData;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-};
