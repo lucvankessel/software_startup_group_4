@@ -3,6 +3,8 @@ import pymysql.cursors
 from dotenv import load_dotenv
 import os
 import requests
+import chatgpt
+import json
 
 load_dotenv()
 
@@ -74,9 +76,21 @@ def article():
 
     url = data['url']
     selected_text = data['text']
+    print("------", flush=True)
+    translated_text = chatgpt.translate_chatgpt(selected_text)
+    tt_json = json.loads(translated_text)
+    print(translated_text,flush=True)
+
+    print("------",flush=True)
+
+    chatgpt_classification = chatgpt.get_chatgpt_result(selected_text)
+    cc_json = json.loads(chatgpt_classification)
+    print(chatgpt_classification,flush=True)
+    print("------", flush=True)
+
 
     # temporary only getting classification from NLP, TODO: integrate classification from chatGPT
-    classification = get_classification(selected_text)
+    classification = get_classification(tt_json["result"])
     if not classification:
         response.status = 500  # Internal Server Error
         return {'status': 'error', 'message': 'Error in classification'}
@@ -90,7 +104,7 @@ def article():
 
     related_articles = rad_data['related_articles']
 
-    return {'status': 'success', "classification": classification, "related_articles": related_articles}
+    return {'status': 'success', "classification": classification, "related_articles": related_articles, "chatgpt_classification": cc_json["number"], "chatgpt_reason": cc_json["reason"]}
 
 
 # Helper Functions
