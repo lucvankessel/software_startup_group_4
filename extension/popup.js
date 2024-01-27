@@ -78,16 +78,7 @@ function getRandomArticles(data) {
 function dualLeaningString(number1, number2) {
     nlp_classification = number1
     chatgpt_classification = number2
-
-    difference = Math.abs(nlp_classification - chatgpt_classification);
-
-    number_input = 0
-
-    if(difference > 25) {
-        number_input = nlp_classification
-    } else {
-        number_input = (nlp_classification + chatgpt_classification) / 2
-    }
+    number_input = (nlp_classification + chatgpt_classification) / 2
 
     return generateLeaningString(number_input)
 }
