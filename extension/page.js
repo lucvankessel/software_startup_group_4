@@ -87,7 +87,7 @@ function centerText(el) {
     el.style.transform = "translate(-50%, -50%)";
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+const addBoxes = function () {
     const textElements = [];
     const minWords = 10;
     let buttonPresent = null;
@@ -294,4 +294,14 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     }
-}); 
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    addBoxes();
+    console.log("DOMContentLoaded");
+})
+
+navigation.addEventListener('navigate', function () {
+    setTimeout(addBoxes, 1000);
+    console.log("navigate");
+})
