@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     button.addEventListener('click', async function () {
                         // open popup
                         const popup = document.createElement('div');
-                        popup.style.position = "absolute";
+                        popup.style.position = "fixed";
                         popup.style.width = "500px";
                         popup.style.height = "500px";
                         popup.style.left = "50%";
