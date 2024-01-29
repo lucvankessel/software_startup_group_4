@@ -139,8 +139,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // outline the elements with atleast 10 words
     for (elt of textElements) {
         if (elt.innerText.split(' ').length >= minWords) {
-            elt.style.outline = "rgb(4 2 102 / 21%) dashed 2px";
-            elt.style.outlineOffset = "4px";
+            // elt.style.outline = "rgb(4 2 102 / 21%) dashed 2px";
+            // elt.style.outlineOffset = "4px";
 
             elt.addEventListener('mouseover', function () {
                 this.style.outline = "rgb(4 2 102) dashed 2px";
@@ -286,8 +286,9 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             elt.addEventListener('mouseleave', function () {
-                this.style.outline = "rgb(4 2 102 / 21%) dashed 2px";
-                this.style.outlineOffset = "4px";
+                // this.style.outline = "rgb(4 2 102 / 21%) dashed 2px";
+                // this.style.outlineOffset = "4px";
+                this.style.outline = "none";
                 this.removeChild(buttonPresent);
                 buttonPresent = null;
             });
