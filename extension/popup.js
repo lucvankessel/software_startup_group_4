@@ -1,50 +1,55 @@
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('getSelectedText').addEventListener('click', function () {
-        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-            var activeTab = tabs[0];
-            chrome.scripting.executeScript({
-                    target: {tabId: activeTab.id},
-                    function: getSelectedText
-                },
-                async function (result) {
-
-                    console.log(tabs[0].url)
-                    document.getElementById("getSelectedText").style.display = "none"
-
-                    document.getElementById("loadingIcon").style.display = "block"
-                    analyzePoliticalLeaning(result[0].result, tabs[0].url)
-                        .then(data => {
-                            document.getElementById("loadingIcon").style.display = "none"
-
-                            document.getElementById("politicalLeaning").style.display = "block";
-                            document.getElementById("relatedArticles").style.display = "block";
-
-                            document.getElementById("leaningText").innerHTML = dualLeaningString(data.classification, data.chatgpt_classification)
-
-                            rad = getRandomArticles(data.related_articles)
-                            console.log(rad)
-                            rad_element = document.getElementById("articlesList")
-                            for( i = 0; i<rad.length; i++) {
-                                var listItem = document.createElement('li');
-
-                                var anchor = document.createElement('a');
-                                anchor.href = rad[i].url;
-                                anchor.target = '_blank';
-                                anchor.textContent = generateLeaningString(rad[i].political_bias);
-
-                                listItem.appendChild(anchor);
-
-                                rad_element.appendChild(listItem)
-                            }
-                        })
-                        .catch(error => {
-                            console.log(error)
-                        });
-                }
-            );
-        });
+        analyse(getSelectedText);
     });
 });
+
+function analyse(textF) {
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        var activeTab = tabs[0];
+        chrome.scripting.executeScript({
+                target: {tabId: activeTab.id},
+                function: textF
+            },
+            async function (result) {
+
+                console.log(tabs[0].url)
+                document.getElementById("getSelectedText").style.display = "none"
+
+                document.getElementById("loadingIcon").style.display = "block"
+                analyzePoliticalLeaning(result[0].result, tabs[0].url)
+                    .then(data => {
+                        document.getElementById("loadingIcon").style.display = "none"
+
+                        document.getElementById("politicalLeaning").style.display = "block";
+                        document.getElementById("relatedArticles").style.display = "block";
+
+                        document.getElementById("leaningText").innerHTML = dualLeaningString(data.classification, data.chatgpt_classification)
+
+                        rad = getRandomArticles(data.related_articles)
+                        console.log(rad)
+                        rad_element = document.getElementById("articlesList")
+                        for( i = 0; i<rad.length; i++) {
+                            var listItem = document.createElement('li');
+
+                            var anchor = document.createElement('a');
+                            anchor.href = rad[i].url;
+                            anchor.target = '_blank';
+                            anchor.textContent = generateLeaningString(rad[i].political_bias);
+
+                            listItem.appendChild(anchor);
+
+                            rad_element.appendChild(listItem)
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    });
+            }
+        );
+    });
+
+}
 
 function getSelectedText() {
     var selection = window.getSelection();
@@ -67,6 +72,9 @@ function getRandomArticles(data) {
             item = data_item
             data.splice(random_id, 1);
             break;
+        }
+        if (item == undefined) {
+            continue;
         }
         var article = item[Math.floor(Math.random() * item.length)]
         return_articles.push(article)
