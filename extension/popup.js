@@ -36,6 +36,8 @@ function analyse(textF) {
                             anchor.href = rad[i].url;
                             anchor.target = '_blank';
                             anchor.textContent = generateLeaningString(rad[i].political_bias);
+                            const domain = rad[i].url.replace('http://', '').replace('https://', '').split(/[/?#]/)[0];
+                            anchor.textContent += " - " + domain;
 
                             listItem.appendChild(anchor);
 
