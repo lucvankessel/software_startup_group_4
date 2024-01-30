@@ -86,8 +86,8 @@ def article():
 
     with connection.cursor() as cursor:
         # insert article if it doesn't exist
-        sql = "SELECT * FROM `article` WHERE `text`=%s AND `url`=%s AND `political_bias`=%s"
-        cursor.execute(sql, (text, url, political_bias))
+        sql = "SELECT * FROM `article` WHERE `url`=%s"
+        cursor.execute(sql, (url))
         article = cursor.fetchone()
         if not article:
             sql = "INSERT INTO `article` (`text`, `url`, `political_bias`) VALUES (%s, %s, %s)"
